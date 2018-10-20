@@ -5,11 +5,6 @@ import os
 from pathlib import Path
 from subprocess import run
 
-class SessionToken:
-    def __init__(self, subdomain, token):
-        self.subdomain = subdomain
-        self.token = token
-
 class OnePassword:
     def __init__(self, op_path=None):
         self.command = '/usr/bin/op'
@@ -34,14 +29,14 @@ class OnePassword:
                 self.session_tokens = json.loads(f.read())
 
                 for token in self.session_tokens:
-                    os.environ['OP_SESSION_' + token.subdomain] = token.token
+                    os.environ['OP_SESSION_' + token['subdomain']] = token['token']
         else:
             for account in self.config['accounts']:
                 subdomain = account['shorthand']
                 output = run([self.command, 'signin', subdomain, '--output=raw'], capture_output=True)
                 token = output.stdout.decode('utf8')
-                session_token = SessionToken(subdomain_token)
+                session_token = { 'subdomain': subdomain, 'token': token }
                 self.session_tokens.append(session_token)
 
             with open(self.session_cache, 'w') as f:
-                f.write(json.dumps(self.session_cache))
+                f.write(json.dumps(self.session_tokens))
