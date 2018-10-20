@@ -34,9 +34,18 @@ class OnePassword:
             for account in self.config['accounts']:
                 subdomain = account['shorthand']
                 output = run([self.command, 'signin', subdomain, '--output=raw'], capture_output=True)
-                token = output.stdout.decode('utf8')
+                token = output.stdout.decode('utf8').rstrip('\n')
                 session_token = { 'subdomain': subdomain, 'token': token }
                 self.session_tokens.append(session_token)
 
             with open(self.session_cache, 'w') as f:
                 f.write(json.dumps(self.session_tokens))
+
+    def list_items(self):
+        items = []
+        for token in self.session_tokens:
+            output = run([self.command, 'list', 'items', '--account=' + token['subdomain']], capture_output=True)
+            items_subdomain = json.loads(output.stdout.decode('utf8'))
+            items += items_subdomain
+
+        return items

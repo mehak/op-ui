@@ -28,5 +28,11 @@ class testInit(unittest.TestCase):
         self.assertEqual(len(op.session_tokens), len(op.config['accounts']))
         self.assertTrue(os.path.isfile(op.session_cache))
 
+    def test_list_items(self):
+        op = OnePassword()
+        op.sign_in()
+        items = op.list_items()
+        self.assertTrue(len(items) > 0)
+
 if __name__ == '__main__':
     unittest.main()
