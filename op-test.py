@@ -26,7 +26,7 @@ class testInit(unittest.TestCase):
         op = OnePassword()
         op.sign_in()
         self.assertEqual(len(op.session_tokens), len(op.config['accounts']))
-        self.assertTrue(os.path.isfile(self.session_cache))
+        self.assertTrue(os.path.isfile(op.session_cache))
 
 if __name__ == '__main__':
     unittest.main()
