@@ -1,0 +1,8 @@
+* op-ui
+op-ui is going to a be a simple gui for access 1Password on linux.  It will
+be a wrapper around the 1Password cli (op) with a simple gui.
+
+* TODO
+  - [ ] Finish wrapping all op commands using the OnePassword class
+  - [ ] Implement the GUI
+  - [ ] Probably a whole lot more...
