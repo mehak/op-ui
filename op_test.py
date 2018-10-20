@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 from op import OnePassword
 
+
 class TestInit(unittest.TestCase):
     """ Tests OnePassword methods """
     def setUp(self):
@@ -56,6 +57,7 @@ class TestInit(unittest.TestCase):
         op.signin()
         documents = op.list_documents()
         self.assertTrue(len(documents) > 0)
+
 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestInit)

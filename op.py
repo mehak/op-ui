@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from subprocess import run
 
+
 class OnePassword:
     """ Class responsible for wrapping op """
     def __init__(self, op_path=None):
@@ -38,12 +39,15 @@ class OnePassword:
 
     def signin(self, subdomain='all', use_cache=True):
         """ Either read from a cache or sign-in to all accounts """
-        if use_cache and os.path.isfile(self.session_cache) and not self.aged_out():
+        session_cache_exists = os.path.isfile(self.session_cache)
+        if use_cache and session_cache_exists and not self.aged_out():
             with open(self.session_cache) as session_file:
                 self.session_tokens = json.loads(session_file.read())
 
                 for token in self.session_tokens:
-                    os.environ['OP_SESSION_' + token['subdomain']] = token['token']
+                    subdomain = token['subdomain']
+                    tok = token['token']
+                    os.environ[f'OP_SESSION_{subdomain}'] = tok
         else:
             self.session_tokens = []
             for account in self.config['accounts']:
