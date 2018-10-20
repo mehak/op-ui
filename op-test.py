@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 import unittest
-from op import OnePassword
+import os
 import json
+from op import OnePassword
 from pathlib import Path
 
 
@@ -12,7 +13,7 @@ class testInit(unittest.TestCase):
         self.assertEqual(op.config_path, str(Path.home()) + '/.op/config')
 
     def test_constructor_config_string(self):
-        op = OnePassword('/home/nmerlin/.op/config')
+        op = OnePassword('/home/nmerlin/.op')
         self.assertEqual(op.config_path, str(Path.home()) + '/.op/config')
 
     def test_constructor_config_read(self):
@@ -21,6 +22,11 @@ class testInit(unittest.TestCase):
             contents = f.read()
             self.assertEqual(op.config, json.loads(contents))
 
+    def test_signin(self):
+        op = OnePassword()
+        op.sign_in()
+        self.assertEqual(len(op.session_tokens), len(op.config['accounts']))
+        self.assertTrue(os.path.isfile(self.session_cache))
 
 if __name__ == '__main__':
     unittest.main()
