@@ -3,6 +3,7 @@
 
 import json
 import os
+from datetime import datetime
 from pathlib import Path
 from subprocess import run
 
@@ -25,9 +26,16 @@ class OnePassword:
 
         self.session_tokens = []
 
-    def sign_in(self, use_cache=True):
+    def signin(self, subdomain='all', use_cache=True):
         """ Either read from a cache or sign-in to all accounts """
-        if use_cache and os.path.isfile(self.session_cache):
+
+        now = datetime.now().timestamp()
+        last_access = os.stat(self.config_path).st_atime
+        seconds_since_last_access = now - last_access
+        thirty_minutes = 1800
+        old_cache = seconds_since_last_access >= thirty_minutes
+
+        if use_cache and os.path.isfile(self.session_cache) and not old_cache:
             with open(self.session_cache) as session_file:
                 self.session_tokens = json.loads(session_file.read())
 
@@ -46,13 +54,27 @@ class OnePassword:
             with open(self.session_cache, 'w') as session_file:
                 session_file.write(json.dumps(self.session_tokens))
 
-    def list_items(self):
-        """ Get a list of items from all accounts """
-        items = []
-        for token in self.session_tokens:
-            command = [self.command, 'list', 'items', '--account=' + token['subdomain']]
-            output = run(command, capture_output=True)
-            items_subdomain = json.loads(output.stdout.decode('utf8'))
-            items += items_subdomain
+    def __generic_run(self, arguments):
+        """ Helper for running op commands and returning output objects """
+        command = [self.command] + arguments
+        output = run(command, capture_output=True)
 
-        return items
+        return json.loads(output.stdout.decode('utf8').rstrip('\n'))
+
+    def __generic_list(self, command, subdomain):
+        """ Generic function for getting op lists """
+        arguments = ['list', command, '--account=' + subdomain]
+
+        return self.__generic_run(arguments)
+
+    def __generic_list_all(self, command):
+        """ Get a list of command for all subdomains """
+        objects = []
+        for token in self.session_tokens:
+            objects += self.__generic_list(command, token['subdomain'])
+
+        return objects
+
+    def list_items(self):
+        """ Get a list of items from signed in accounts """
+        return self.__generic_list_all('items')

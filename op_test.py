@@ -27,17 +27,17 @@ class TestInit(unittest.TestCase):
             contents = config_file.read()
             self.assertEqual(op.config, json.loads(contents))
 
-    def test_signin(self):
+    def test_signin_all(self):
         """ Tests signing in/reading from the sign-in cache """
         op = OnePassword()
-        op.sign_in()
+        op.signin()
         self.assertEqual(len(op.session_tokens), len(op.config['accounts']))
         self.assertTrue(os.path.isfile(op.session_cache))
 
     def test_list_items(self):
         """ Tests the wrapper around op list items """
         op = OnePassword()
-        op.sign_in()
+        op.signin()
         items = op.list_items()
         self.assertTrue(len(items) > 0)
 
