@@ -8,16 +8,6 @@ from pathlib import Path
 from subprocess import run
 
 
-def generate_list_method(name, command):
-    """ Generates method for list_x method """
-    def method(self):
-        run_command = getattr(self, 'generic_list_all')
-        return run_command(command)
-
-    method.__name__ = name
-    return method
-
-
 class OnePassword:
     """ Class responsible for wrapping op """
     def __init__(self, op_path=None):
