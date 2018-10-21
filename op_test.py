@@ -9,7 +9,7 @@ from pathlib import Path
 from op import OnePassword
 
 
-def generate_list_test(objects_name, command):
+def test_li_gen(objects_name, command):
     """ generator for the list_x tests """
     def method(self):
         op_test = OnePassword()
@@ -59,10 +59,8 @@ class TestInit(unittest.TestCase):
         self.assertEqual(num_sessions, num_accounts)
         self.assertTrue(os.path.isfile(op_test.session_cache))
 
-    prefix = 'test_list_'
-    lis = 'list_'
-    test_list_items = generate_list_test(f'{prefix}items', 'list_items')
-    test_list_documents = generate_list_test(f'{prefix}documents', 'list_documents')
+    test_list_items = test_li_gen('test_list_items', 'list_items')
+    test_list_documents = test_li_gen('test_list_documents', 'list_documents')
 
 
 if __name__ == '__main__':
