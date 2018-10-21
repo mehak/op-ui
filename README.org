@@ -4,6 +4,7 @@ be a wrapper around the 1Password cli (op) with a simple gui.
 
 * TODO
   - [ ] Finish wrapping all op commands using the OnePassword class
+    - [ ] list events - requires custom function or maybe extended on
   - [ ] Implement the GUI
   - [ ] Maybe organize the project a bit better
   - [ ] Probably a whole lot more...
