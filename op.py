@@ -73,7 +73,7 @@ class OnePassword:
         output = run(command, capture_output=True)
 
         if output.returncode > 0:
-            print(f'{output}')
+            print(f'{output.stderr.decode("utf8")}')
             self.signin(use_cache=False)
             self.__generic_run(arguments)
 
