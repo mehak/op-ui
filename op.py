@@ -8,6 +8,16 @@ from pathlib import Path
 from subprocess import run
 
 
+def generate_list_method(name, command):
+    """ Generates method for list_x method """
+    def method(self):
+        run_command = getattr(self, 'generic_list_all')
+        return run_command(command)
+
+    method.__name__ = name
+    return method
+
+
 class OnePassword:
     """ Class responsible for wrapping op """
     def __init__(self, op_path=None):
@@ -85,7 +95,7 @@ class OnePassword:
 
         return self.__generic_run(arguments)
 
-    def __generic_list_all(self, command):
+    def generic_list_all(self, command):
         """ Get a list of command for all subdomains """
         objects = []
         for token in self.session_tokens:
@@ -93,10 +103,5 @@ class OnePassword:
 
         return objects
 
-    def list_items(self):
-        """ Get a list of items from signed in accounts """
-        return self.__generic_list_all('items')
-
-    def list_documents(self):
-        """ Get a list of documents from signed in accounts """
-        return self.__generic_list_all('documents')
+    list_items = generate_list_method('list_items', 'items')
+    list_documents = generate_list_method('list_documents', 'documents')
