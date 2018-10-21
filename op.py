@@ -31,7 +31,12 @@ class OnePassword:
     def aged_out(self):
         """ Checks the age of the cache """
         now = datetime.now().timestamp()
-        last_access = os.stat(self.session_cache).st_atime
+        atime = os.stat(self.session_cache).st_atime
+        mtime = os.stat(self.session_cache).st_mtime
+        ctime = os.stat(self.session_cache).st_ctime
+        last_access = atime if atime > mtime else mtime
+        last_access = ctime if last_access > ctime else last_access
+
         seconds_since_last_access = now - last_access
         thirty_minutes = 1800
 
@@ -68,6 +73,7 @@ class OnePassword:
         output = run(command, capture_output=True)
 
         if output.returncode > 0:
+            print(f'{output}')
             self.signin(use_cache=False)
             self.__generic_run(arguments)
 
