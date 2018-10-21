@@ -103,5 +103,9 @@ class OnePassword:
 
         return objects
 
-    list_items = generate_list_method('list_items', 'items')
     list_documents = generate_list_method('list_documents', 'documents')
+    list_groups = generate_list_method('list_groups', 'groups')
+    list_items = generate_list_method('list_items', 'items')
+    list_templates = generate_list_method('list_templates', 'templates')
+    list_users = generate_list_method('list_users', 'users')
+    list_vaults = generate_list_method('list_vaults', 'vaults')

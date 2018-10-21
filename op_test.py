@@ -59,8 +59,12 @@ class TestInit(unittest.TestCase):
         self.assertEqual(num_sessions, num_accounts)
         self.assertTrue(os.path.isfile(op_test.session_cache))
 
-    test_list_items = test_li_gen('test_list_items', 'list_items')
     test_list_documents = test_li_gen('test_list_documents', 'list_documents')
+    test_list_groups = test_li_gen('test_list_groups', 'list_groups')
+    test_list_items = test_li_gen('test_list_items', 'list_items')
+    test_list_templates = test_li_gen('test_list_templates', 'list_templates')
+    test_list_users = test_li_gen('test_list_users', 'list_users')
+    test_list_vaults = test_li_gen('test_list_vaults', 'list_vaults')
 
 
 if __name__ == '__main__':
