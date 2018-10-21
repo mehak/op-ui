@@ -54,8 +54,10 @@ class OnePassword:
 
     def signin(self, subdomain='all', use_cache=True):
         """ Either read from a cache or sign-in to all accounts """
-        session_cache_exists = os.path.isfile(self.session_cache)
-        if use_cache and session_cache_exists and not self.aged_out():
+        session_cache = self.session_cache
+        exists = os.path.isfile(session_cache)
+        has_content = exists and os.stat(session_cache).st_size > 3
+        if use_cache and has_content and not self.aged_out():
             with open(self.session_cache) as session_file:
                 self.session_tokens = json.loads(session_file.read())
 
@@ -69,9 +71,12 @@ class OnePassword:
                 subdomain = account['shorthand']
                 command = [self.command, 'signin', subdomain, '--output=raw']
                 output = run(command, capture_output=True)
+
+                if output.returncode > 0:
+                    raise ChildProcessError(f'{output.stderr.decode("utf8")}')
+
                 token = output.stdout.decode('utf8').rstrip('\n')
                 session_token = {'subdomain': subdomain, 'token': token}
-
                 self.session_tokens.append(session_token)
 
             with open(self.session_cache, 'w') as session_file:
@@ -83,29 +88,32 @@ class OnePassword:
         output = run(command, capture_output=True)
 
         if output.returncode > 0:
-            print(f'{output.stderr.decode("utf8")}')
-            self.signin(use_cache=False)
-            self.__generic_run(arguments)
+            raise ChildProcessError(f'{output.stderr.decode("utf8")}')
 
         return json.loads(output.stdout.decode('utf8').rstrip('\n'))
 
     def __generic_list(self, command, subdomain):
         """ Generic function for getting op lists """
         arguments = ['list', command, '--account=' + subdomain]
-
         return self.__generic_run(arguments)
 
-    def generic_list_all(self, command):
+    def list(self, command):
         """ Get a list of command for all subdomains """
+        valid_commands = ['documents',
+                          'groups',
+                          'items',
+                          'templates',
+                          'users',
+                          'vaults']
+
+        if command not in valid_commands:
+            error_message = f'{command} is not a valid command.'
+            advice = f'Approved commands are {valid_commands}'
+            message = f'{error_message}  {advice}'
+            raise ValueError(message)
+
         objects = []
         for token in self.session_tokens:
             objects += self.__generic_list(command, token['subdomain'])
 
         return objects
-
-    list_documents = generate_list_method('list_documents', 'documents')
-    list_groups = generate_list_method('list_groups', 'groups')
-    list_items = generate_list_method('list_items', 'items')
-    list_templates = generate_list_method('list_templates', 'templates')
-    list_users = generate_list_method('list_users', 'users')
-    list_vaults = generate_list_method('list_vaults', 'vaults')
