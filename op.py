@@ -107,3 +107,15 @@ class OnePassword:
             objects += self.__generic_list(command, token['subdomain'])
 
         return objects
+
+    def get(self, command, thing, subdomain=None, include_trash=False):
+        """ Generic function for op get [command] """
+        arguments = ['get', command, thing]
+
+        if include_trash:
+            arguments += ['--include-trash']
+
+        if subdomain:
+            arguments += [f'--account={subdomain}']
+
+        return self.__generic_run(arguments)

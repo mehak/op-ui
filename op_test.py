@@ -9,7 +9,7 @@ from pathlib import Path
 from op import OnePassword
 
 
-def test_list(objects_name, command):
+def test_list(name, command):
     """ generator for the list_x tests """
     def method(self):
         op_test = OnePassword()
@@ -17,7 +17,20 @@ def test_list(objects_name, command):
         objects = op_test.list(command)
         self.assertTrue(len(objects) > 0)
 
-    method.__name__ = objects_name
+    method.__name__ = name
+    return method
+
+
+def test_get(name, command):
+    """ generator for the get_x tests """
+    def method(self):
+        op_test = OnePassword()
+        op_test.signin()
+        thing = input('Insert object name, uuid, email, or url> ')
+        objects = op_test.get(command, thing)
+        self.assertTrue(len(objects) > 0)
+
+    method.__name__ = name
     return method
 
 
@@ -59,12 +72,16 @@ class TestInit(unittest.TestCase):
         self.assertEqual(num_sessions, num_accounts)
         self.assertTrue(os.path.isfile(op_test.session_cache))
 
+    # Test list x
     test_list_documents = test_list('test_list_documents', 'documents')
     test_list_groups = test_list('test_list_groups', 'groups')
     test_list_items = test_list('test_list_items', 'items')
     test_list_templates = test_list('test_list_templates', 'templates')
     test_list_users = test_list('test_list_users', 'users')
     test_list_vaults = test_list('test_list_vaults', 'vaults')
+
+    # Test get x thing
+    test_get_item = test_get('test_get_item', 'item')
 
 
 if __name__ == '__main__':
